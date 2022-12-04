@@ -1,0 +1,181 @@
+Version of Hadoop:
+[cloudera@quickstart ~]$ hadoop version
+Create directory:
+[cloudera@quickstart ~]$ hdfs dfs -mkdir /user/cloudera/dir1
+Display content in specified directory:
+[cloudera@quickstart ~]$ hdfs dfs -ls /user/cloudera
+This command behaves like ls but displays entries in all the subdirectories recursively:
+[cloudera@quickstart ~]$ hdfs dfs -ls -R /user
+Saving file with using wget to /home/cloudera directory:
+[cloudera@quickstart ~]$ wget https://filesamples.com/samples/document/txt/sample3.txt
+This command copies the file in the local filesystem to the file in DFS:
+[cloudera@quickstart ~]$ hdfs dfs -put /home/cloudera/sample3.txt
+/user/cloudera/dir1
+This Hadoop shell command copies the file in HDFS identified by <src> to
+file in local file system identified by <localhost> (get <src> <localhost>):
+[cloudera@quickstart ~]$ hdfs dfs -get /user/cloudera/dir1 /home/cloudera
+Second Example: First, create a folder named dir2 in the hdfs system, then download file:
+[cloudera@quickstart ~]$ wget
+https://filesamples.com/samples/document/txt/sample2.txt
+[cloudera@quickstart ~]$ hdfs dfs -mkdir dir2
+[cloudera@quickstart ~]$ hdfs dfs -put /home/cloudera/sample2.txt
+/user/cloudera/dir2
+
+This HDFS command retrieves all files in the source path entered by the user in HDFS. And merges them into one single file created in the local file system identified by local destination:
+[cloudera@quickstart ~]$ hdfs dfs -getmerge /user/cloudera/dir1/sample3.txt /user/cloudera/dir2/sample2.txt /home/cloudera/sample.txt 
+This Hadoop shell command displays the contents of file on console or stdout:
+[cloudera@quickstart ~]$ hdfs dfs -cat /user/cloudera/dir2/sample2.txt
+
+This Hadoop shell command moves the file from the specified source to
+destination within HDFS (-mv <src> <dest>):
+[cloudera@quickstart ~]$ hdfs dfs -mv /user/cloudera/dir1/sample3.txt
+/user/cloudera/dir2
+
+This Hadoop shell command copies the file or directory from given source to destination within HDFS:
+[cloudera@quickstart ~]$ hdfs dfs -cp /user/cloudera/dir2/sample2.txt
+/user/cloudera/dir1 
+
+[cloudera@quickstart ~]$ hbase shell
+Creating table using HBase shell
+>> create ‘<table name>’,’<column family>’
+Example:
+	>> create 'emp', 'personal data', 'professional data'
+Verification:
+	>> list
+Inserting data:
+	>> put ’<table name>’,’row1’,’<colfamily:colname>’,’<value>’
+Example:
+	>> put 'emp','1','personal data:name','Jack'
+	>> put 'emp','1','personal data:city','New York'
+	>> put 'emp','1','professional data:designation','manager'
+	>> put 'emp','1','professional data:salary','50000'
+Updating data:
+	>> put ‘table name’,’row ’,'Column family:column name',’new value’ Example,
+	>> put 'emp','1','personal:city','Chicago'
+Reading data:
+	>> get ’<table name>’,’row1’
+Reading specific column:
+	>> get 'table name', ‘rowid’, {COLUMN ⇒ ‘column family:column name ’}
+Example:
+	>> get 'emp', '1'
+	>> get 'emp', '1', {COLUMN => 'personal data:name'}
+Deleting specific cell:
+	>> delete ‘<table name>’, ‘<row>’, ‘<column name >’, ‘<time stamp>’
+
+Example:
+	>> delete 'emp', '1', 'personal data:city', 1417521848375
+ Deleting all cells in a row:
+	>> deleteall ‘<table name>’, ‘<row>’
+Example:
+	>> deleteall 'emp','1' 
+Scanning in HBase:
+	>> scan ‘<table name>’
+Dropping table:
+	>> disable ‘<table name>’
+	>> drop ‘<table name>'
+
+Download:
+	>> wget {Link}
+Unzip file:
+	>> unzip {filename}.zip
+Move file to another folder:
+	>> mv {filename} {filepath}
+	>> mv {filename} ../
+Make a folder in HDFS:
+	>> hdfs dfs -mkdir {folder_name}
+See all files in HDFS
+	>> hdfs dfs -ls -R
+Make the files executable: 
+	>> chmod +x {file_name}
+Checking values inside the file:
+	>> more {file_name}
+Putting file to the destination:
+	>> hdfs dfs -put /home/cloudera/{file_name} /home/cloudera/{folder_name}
+Executing MapReduce function:
+>> Hadoop jar /usr/lib/Hadoop-mapreduce/Hadoop-streaming.jar \
+-input /user/cloudera/input \
+-output /user/cloudera/output_new \
+-mapper /home/cloudera/{mapper_file}.py \
+-reducer /home/cloudera/{reducer_file}.py \
+Viewing the output:
+>> hdfs dfs -ls /user/cloudera/output_new
+>> hdfs dfs cat /user/cloudera/output_new/part-00000
+Setting reducer to 0 and rerunning the task:
+>> Hadoop jar /usr/lib/Hadoop-mapreduce/Hadoop-streaming.jar \
+-input /user/cloudera/input \
+-output /user/cloudera/output_new_0 \
+-mapper /home/cloudera/{mapper_file}.py \
+-reducer /home/cloudera/{reducer_file}.py \
+-numReduceTasks 0 
+How many files were written in the directory? Get the output file from this run, and then upload it:
+	>> hdfs dfs -getmerge /user/cloudera/output_new_0/* wrdcnt_0_output.txt
+
+Finding path of the file:
+	>> readlink -f {filename}
+
+
+Preparing for data processing:
+	>> hdfs dfs -mkdir /user/cloudera/data
+	>> hdfs dfs -put airline_delay_causes.csv /user/cloudera/data
+Creating HIVE table:
+	>> hdfs dfs -ls /user/cloudera/data 	>> hive
+HQL Commands to create data:
+CREATE TABLE flights
+(year INT,
+month INT,
+carrier STRING,
+carrier_name STRING,
+airport STRING,
+airport_name STRING,
+arr_flights DOUBLE,
+arr_del15 DOUBLE,
+carrier_ct DOUBLE,
+weather_ct DOUBLE,
+nas_ct DOUBLE,
+security_ct DOUBLE,
+late_aircraft_ct DOUBLE,
+rr_cancelled DOUBLE,
+arr_diverted DOUBLE,
+arr_delay DOUBLE,
+carrier_delay DOUBLE,
+weather_delay DOUBLE,
+nas_delay DOUBLE,
+security_delay DOUBLE,
+late_aircraft_delay DOUBLE)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+TBLPROPERTIES ('skip.header.line.count'='1');
+
+>> SHOW TABLES;
+>> SELECT * FROM flights;  
+Loading the data to table:
+	>> LOAD DATA INPATH '/user/cloudera/data/airline_delay_causes.csv' INTO TABLE flights;
+Command Line in HUE to JOIN tables:
+SELECT * FROM flights inner Join airports on flights.airport=airports.iata limit 10;
+
+SELECT avg(flights.weather_delay) as avg_delay, airports.state as state
+FROM flights inner JOIN airports on flights.airport=airports.iata
+GROUP BY state
+ORDER BY avg_delay
+limit 10
+
+
+Preparing data for processing:
+	>> unzip -o weatherAUS.zip
+	>> hdfs dfs -put weatherAUS.csv /user/cloudera/data
+Starting PySpark:
+	>>hdfs dfs -ls /user/cloudera/data
+	>>pyspark – packages com.databricks:spark-csv_2.10:1.5.0
+Inside Jupyter Notebook:
+from pyspark.sql import SQLContext
+import pandas
+sqlsc = SQLContext(sc)
+df = sqlsc.read.format(‘csv’).options(header=’true’)load(‘/user/cloudera/data/weatherAUS.csv’) 
+Executing commands:
+	>>df.PrintSchema()
+	>>df.count()
+	>>df.select(‘Date’, ‘Location’, ‘Temp9am’).show(5)
+	>>df.filter(df[‘Location’}==’Brisbane’).show(5) 
+	>>df.groupby(‘Location’).count().show()
+Calculate average and sum:
+	>> df.groupby(‘Location’).agg({‘MinTemp’: ‘min’, ‘Temp9am’:’mean’, ‘Rainfall’: ‘sum’}).show()
+
